@@ -1,15 +1,20 @@
 function buildMetadata(sample) {
 
-  // @TODO: Complete the following function that builds the metadata panel
-
   // Use `d3.json` to fetch the metadata for a sample
+  d3.json(`/metadata/${sample}`).then(function(metadata) {
     // Use d3 to select the panel with id of `#sample-metadata`
-
+    var metadataElement = d3.select('#sample_metadata');
     // Use `.html("") to clear any existing metadata
+    metadataElement.html('');
 
     // Use `Object.entries` to add each key and value pair to the panel
-    // Hint: Inside the loop, you will need to use d3 to append new
+    // Use d3 to append new
     // tags for each key-value in the metadata.
+    Object.entries(metadata).forEach(([key, value]) => {
+        console.log(`${key}: ${value}`); // "a 5", "b 7", "c 9"
+        d3.select(".panel-body").append("p").text(`${key}: ${value}`);
+      })
+    });
 
     // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
@@ -18,12 +23,41 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
+    d3.json(`/samples/${sample}`).then(function(data) {
+
+      var pieChartData = [{
+        values: data['sample_values'].slice(0, 10),
+        labels: data['otu_ids'].slice(0, 10),
+        hovertext: data['otu_labels'].slice(0, 10),
+        hoverinfo: 'hovertext',
+        type: 'pie'
+      }];
+      var pieChartLayout = {
+          margin: { t: 0, l: 0 }
+      };
+      var pieElement = d3.select('#pie').node();
+      Plotly.plot(pieElement, pieChartData, pieChartLayout);
 
     // @TODO: Build a Bubble Chart using the sample data
-
-    // @TODO: Build a Pie Chart
-    // HINT: You will need to use slice() to grab the top 10 sample_values,
-    // otu_ids, and labels (10 each).
+      var bubbleChartLayout = {
+        margin: { t: 0 },
+        hovermode: 'closest',
+        xaxis: { title: 'OTU ID' }
+      };
+      var bubbleChartData = [{
+          x: data['otu_ids'],
+          y: data['sample_values'],
+          text: data['otu_labels'],
+          mode: 'markers',
+          marker: {
+              size: data['sample_values'],
+              color: data['otu_ids'],
+              colorscale: "Earth",
+          }
+      }];
+      var bubbleElement = d3.select('#bubble').node();
+      Plotly.plot(bubbleElement, bubbleChartData, bubbleChartLayout);
+    });
 }
 
 function init() {
