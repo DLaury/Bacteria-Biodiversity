@@ -3,18 +3,17 @@ function buildMetadata(sample) {
   // Use `d3.json` to fetch the metadata for a sample
   d3.json(`/metadata/${sample}`).then(function(metadata) {
     // Use d3 to select the panel with id of `#sample-metadata`
-    var metadataElement = d3.select('#sample_metadata');
+    var metadataElement = d3.select('#sample-metadata');
     // Use `.html("") to clear any existing metadata
     metadataElement.html('');
-
     // Use `Object.entries` to add each key and value pair to the panel
     // Use d3 to append new
     // tags for each key-value in the metadata.
     Object.entries(metadata).forEach(([key, value]) => {
-        console.log(`${key}: ${value}`); // "a 5", "b 7", "c 9"
-        d3.select(".panel-body").append("p").text(`${key}: ${value}`);
-      })
+         console.log(`${key}: ${value}`);
+         metadataElement.append("p").text(`${key}: ${value}`);
     });
+  });
 
     // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
@@ -36,7 +35,7 @@ function buildCharts(sample) {
           margin: { t: 0, l: 0 }
       };
       var pieElement = d3.select('#pie').node();
-      Plotly.plot(pieElement, pieChartData, pieChartLayout);
+      Plotly.react(pieElement, pieChartData, pieChartLayout);
 
     // @TODO: Build a Bubble Chart using the sample data
       var bubbleChartLayout = {
@@ -56,7 +55,7 @@ function buildCharts(sample) {
           }
       }];
       var bubbleElement = d3.select('#bubble').node();
-      Plotly.plot(bubbleElement, bubbleChartData, bubbleChartLayout);
+      Plotly.react(bubbleElement, bubbleChartData, bubbleChartLayout);
     });
 }
 
